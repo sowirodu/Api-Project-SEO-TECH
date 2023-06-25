@@ -50,3 +50,5 @@ Before running the script, make sure you have the following installed:
 
    NotAPokémon is not a Pokémon.
    ```
+
+[![Check Style](https://github.com/sowirodu/Api-Project-SEO-TECH/actions/workflows/styles.yaml/badge.svg)](https://github.com/sowirodu/Api-Project-SEO-TECH/actions/workflows/styles.yaml)
