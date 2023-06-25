@@ -2,23 +2,43 @@ import requests
 import sqlalchemy as db
 import pandas as pd
 
-response = requests.get('https://pokeapi.co/api/v2/pokemon/ditto')
-pokemon_data = response.json()
+def is_pokemon(name):
+    url = f"https://pokeapi.co/api/v2/pokemon/{name.lower()}"
+    response = requests.get(url)
+    if response.status_code == 200:
+        return True
+    else:
+        return False
 
 # Extract relevant data from pokemon_data dictionary
-pokemon_info = {
-    'Name': [pokemon_data['name']],
-    'Height': [pokemon_data['height']],
-    'Weight': [pokemon_data['weight']],
-    'Base Experience': [pokemon_data['base_experience']],
-}
+def info_pokemon(data):
+    pokemon_info = {
+        'Name': [data['name']],
+        'Height': [data['height']],
+        'Weight': [data['weight']],
+        'Base Experience': [data['base_experience']],
+    }
+    return pokemon_info
 
-df = pd.DataFrame(pokemon_info)
-engine = db.create_engine('sqlite:///data_base_name.db')
-df.to_sql('table_name', con=engine, if_exists='replace', index=False)
+def to_database(info):
+    df = pd.DataFrame(info)
+    engine = db.create_engine('sqlite:///data_base_name.db')
+    df.to_sql('table_name', con=engine, if_exists='replace', index=False)
 
-with engine.connect() as connection:
-   query_result = connection.execute(db.text("SELECT * FROM table_name;")).fetchall()
-   print(pd.DataFrame(query_result))
+    with engine.connect() as connection:
+        query_result = connection.execute(db.text("SELECT * FROM table_name;")).fetchall()
+        print(pd.DataFrame(query_result))
+    return pd.DataFrame(query_result)
 
+def main():
+    pokemon_name = input("Enter a Pokémon name: ")
+    if is_pokemon(pokemon_name):
+        response = requests.get(f"https://pokeapi.co/api/v2/pokemon/{pokemon_name.lower()}")
+        pokemon_data = response.json()
+        info = info_pokemon(pokemon_data)
+        to_database(info)
+    else:
+        print(f"{pokemon_name} is not a Pokémon.")
 
+if __name__ == "__main__":
+    main()
